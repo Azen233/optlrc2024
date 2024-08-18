@@ -2,7 +2,6 @@
 
 ## Build Instructions
 
-1. **Clone the Repository**
 ```bash
 git clone https://github.com/Azen233/optlrc2024.git
 cd ceph
