@@ -4,7 +4,7 @@
 
 ```bash
 git clone https://github.com/Azen233/optlrc2024.git
-cd ceph
+cd optlrc2024
 git submodule update --init --recursive --progress
 ./install-deps.sh
 sudo apt install python3-routes
