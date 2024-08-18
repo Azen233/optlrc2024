@@ -16,10 +16,10 @@ sudo apt install python3-routes
 sudo apt-get install doxygen
 sudo apt-get install graphviz
 ```
-(optional:)
+
 
 ```bash
-sudo add-apt-repository ppa:deadsnakes/ppa -y && sudo apt-get update && sudo apt-get install python3.9 python3.9-venv python3.9-dev -y && sudo update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.9 
+(optional): sudo add-apt-repository ppa:deadsnakes/ppa -y && sudo apt-get update && sudo apt-get install python3.9 python3.9-venv python3.9-dev -y && sudo update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.9 
 ```
 
 ```bash
