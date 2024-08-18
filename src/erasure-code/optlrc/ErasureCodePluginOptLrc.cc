@@ -21,16 +21,16 @@ Alexander Barg, Department of ECE/ISR, University of Maryland
 #include "ErasureCodeOptLrc.h"
 #include "ErasureCodePluginOptLrc.h"
 // re-include our assert
-#include "include/assert.h"
+#include "include/ceph_assert.h"
 
 #define dout_subsys ceph_subsys_osd
 #undef dout_prefix
 #define dout_prefix _prefix(_dout)
 
 int ErasureCodePluginOptLrc::factory(const std::string &directory,
-		      ErasureCodeProfile &profile,
-		      ErasureCodeInterfaceRef *erasure_code,
-		      ostream *ss) {
+		      ceph::ErasureCodeProfile &profile,
+		      ceph::ErasureCodeInterfaceRef *erasure_code,
+		      std::ostream *ss) {
     ErasureCodeOptLrc *interface;
     interface = new ErasureCodeOptLrc();
     int r = interface->init(profile, ss);
@@ -48,8 +48,13 @@ const char *__erasure_code_version() { return CEPH_GIT_NICE_VER; }
 
 int __erasure_code_init(char *plugin_name, char *directory)
 {
-  ErasureCodePluginRegistry &instance = ErasureCodePluginRegistry::instance();
-  return instance.add(plugin_name, new ErasureCodePluginOptLrc());
+  auto& instance = ceph::ErasureCodePluginRegistry::instance();
+  auto plugin = std::make_unique<ErasureCodePluginOptLrc>();
+  int r = instance.add(plugin_name, plugin.get());
+  if (r == 0) {
+    plugin.release();
+  }
+  return r;
 }
 
 #endif

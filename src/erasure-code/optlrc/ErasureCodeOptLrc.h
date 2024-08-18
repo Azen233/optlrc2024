@@ -78,7 +78,8 @@ public:
     ruleset_steps.push_back(Step("chooseleaf", "host", 0));
   }
 ~ErasureCodeOptLrc() override {}
-int init(ErasureCodeProfile &profile, std::ostream *ss) override;
+int init(ceph::ErasureCodeProfile &profile, std::ostream *ss) override;
+
 unsigned int get_chunk_count() const override {
 	  return n;
   }
@@ -180,11 +181,11 @@ int decode_chunks(const std::set<int> &want_to_read,
 	
 void optlrc_encode(char **data, char **coding, int blocksize);
 
-int minimum_to_decode(const std::set<int> &want_to_read,
+int _minimum_to_decode(const std::set<int> &want_to_read,
 		const std::set<int> &available,
 		std::set<int> *minimum) override;
 
-int create_ruleset(const std::string &name,
+int create_rule(const std::string &name,
 			CrushWrapper &crush,
 			std::ostream *ss) const override;
 protected:

@@ -21,12 +21,12 @@ Alexander Barg, Department of ECE/ISR, University of Maryland
 
 #include "erasure-code/ErasureCodePlugin.h"
 
-class ErasureCodePluginOptLrc : public ErasureCodePlugin {
+class ErasureCodePluginOptLrc : public ceph::ErasureCodePlugin {
 public:
   int factory(const std::string &directory,
-		      ErasureCodeProfile &profile,
-		      ErasureCodeInterfaceRef *erasure_code,
-		      ostream *ss) override;
+		      ceph::ErasureCodeProfile &profile,
+		      ceph::ErasureCodeInterfaceRef *erasure_code,
+		      std::ostream *ss) override;
 };
 
 #endif

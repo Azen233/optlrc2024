@@ -29,7 +29,7 @@ Alexander Barg, Department of ECE/ISR, University of Maryland
 #include "include/stringify.h"
 #include "erasure-code/ErasureCodePlugin.h"
 #include "json_spirit/json_spirit_writer.h"
-#include "include/assert.h"
+#include "include/ceph_assert.h"
 
 extern "C" {
 #include "erasure-code/jerasure/jerasure/include/jerasure.h"
@@ -51,7 +51,7 @@ static ostream& _prefix(std::ostream* _dout)
 {
   return *_dout << "ErasureCodeOptLrc: ";
 }
-int ErasureCodeOptLrc::create_ruleset(const string &name,
+int ErasureCodeOptLrc::create_rule(const string &name,
 					CrushWrapper &crush,
 					ostream *ss) const
 {
@@ -68,7 +68,7 @@ int ErasureCodeOptLrc::create_ruleset(const string &name,
   int ruleset = 0;
   int rno = 0;
   for (rno = 0; rno < crush.get_max_rules(); rno++) {
-    if (!crush.rule_exists(rno) && !crush.ruleset_exists(rno))
+    if (!crush.rule_exists(rno) && !crush.rule_exists(rno))
        break;
   }
   ruleset = rno;
@@ -77,17 +77,18 @@ int ErasureCodeOptLrc::create_ruleset(const string &name,
   int min_rep = 3;
   int max_rep = get_chunk_count();
   int ret;
-  ret = crush.add_rule(steps, ruleset, pg_pool_t::TYPE_ERASURE,
-		  min_rep, max_rep, rno);
-  assert(ret == rno);
+  ret = crush.add_rule(rno, steps, pg_pool_t::TYPE_ERASURE);
+  //ret = crush.add_rule(steps, ruleset, pg_pool_t::TYPE_ERASURE,
+	//	  min_rep, max_rep, rno);
+  ceph_assert(ret == rno);
   int step = 0;
 
   ret = crush.set_rule_step(rno, step++, CRUSH_RULE_SET_CHOOSELEAF_TRIES, 5, 0);
-  assert(ret == 0);
+  ceph_assert(ret == 0);
   ret = crush.set_rule_step(rno, step++, CRUSH_RULE_SET_CHOOSE_TRIES, 100, 0);
-  assert(ret == 0);
+  ceph_assert(ret == 0);
   ret = crush.set_rule_step(rno, step++, CRUSH_RULE_TAKE, root, 0);
-  assert(ret == 0);
+  ceph_assert(ret == 0);
   for (vector<Step>::const_iterator i = ruleset_steps.begin();
        i != ruleset_steps.end();
        ++i) {
@@ -99,10 +100,10 @@ int ErasureCodeOptLrc::create_ruleset(const string &name,
       return -EINVAL;
     }
     ret = crush.set_rule_step(rno, step++, op, i->n, type);
-    assert(ret == 0);
+    ceph_assert(ret == 0);
   }
   ret = crush.set_rule_step(rno, step++, CRUSH_RULE_EMIT, 0, 0);
-  assert(ret == 0);
+  ceph_assert(ret == 0);
   crush.set_rule_name(rno, name);
   return ruleset;
 }
@@ -199,7 +200,7 @@ int ErasureCodeOptLrc::parse(ErasureCodeProfile &profile,
 			       ostream *ss)
 {
   int err = ErasureCode::parse(profile, ss);
-  err |= sanity_check_k(k, ss);
+  err |= sanity_check_k_m(k, 1, ss);//Assume m == 1
   if (err)
         return err;
   return parse_ruleset(profile, ss);
@@ -338,7 +339,7 @@ void ErasureCodeOptLrc::optlrc_encode(char **data, char **coding, int blocksize)
 	free(matrix);
 }
 
-int ErasureCodeOptLrc::minimum_to_decode(const set<int> &want_to_read,
+int ErasureCodeOptLrc::_minimum_to_decode(const set<int> &want_to_read,
 				      const set<int> &available_chunks,
 				      set<int> *minimum)
 {
