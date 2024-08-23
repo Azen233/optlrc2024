@@ -2,6 +2,7 @@
 
 ## Prerequisite
 Image: Ubuntu 22.04.2 LTS(Jammy)
+
 Filesystem space: ~70G 
 (manual for allocating more space on a node of cloudlab:https://docs.cloudlab.us/cloudlab-manual.html#%28part._storage-example-local-dataset%29)
 
